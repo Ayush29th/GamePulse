@@ -8,6 +8,8 @@ from modules.insights import generate_insights, generate_match_analysis
 from components.metrics import render_kpi_card, render_perf_score_card
 from components.charts import render_performance_trend, render_radar_chart
 from components.tables import render_map_analysis_table, render_match_history_table
+from modules.achievements import compute_achievements
+from components.badges import render_achievement_badge
 
 set_page_config()
 
@@ -620,6 +622,29 @@ elif st.session_state.page == 'Performance':
                 fig2.data[0].marker.color = ['#111318'] * (len(fig2.data[0].marker.color) - 2) + ['#9D7BFF', '#9D7BFF']
                 st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
     
+elif st.session_state.page == 'Achievements':
+    render_top_bar("Achievements", "Milestones and badges earned in your career")
+    
+    if current_player_df.empty:
+        st.warning("No data available to compute achievements.")
+    else:
+        achievements = compute_achievements(current_player_df)
+        
+        if not achievements:
+            st.info("Play some matches to earn achievements!")
+        else:
+            render_html("""
+            <div style="margin-bottom: 24px;">
+                <h3 style="margin: 0 0 8px 0; font-size: 16px; color: white; letter-spacing: 0.5px;">Unlocked Badges</h3>
+                <div style="color: #8C8F99; font-size: 13px;">Showcasing your top career milestones</div>
+            </div>
+            """)
+            
+            cols = st.columns(3)
+            for i, achievement in enumerate(achievements):
+                with cols[i % 3]:
+                    render_achievement_badge(achievement)
+
 elif st.session_state.page == 'Settings':
     render_top_bar("Application Settings", "Manage your account and data connections")
     
