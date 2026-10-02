@@ -622,6 +622,64 @@ elif st.session_state.page == 'Performance':
                 fig2.data[0].marker.color = ['#111318'] * (len(fig2.data[0].marker.color) - 2) + ['#9D7BFF', '#9D7BFF']
                 st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
     
+elif st.session_state.page == 'Armory':
+    render_top_bar("Armory", "Weapon Performance Analytics")
+    
+    if current_player_df.empty or 'primary_weapon' not in current_player_df.columns:
+        st.warning("No weapon data available.")
+    else:
+        render_html("""
+        <div style="margin-bottom: 32px;">
+            <h3 style="margin: 0 0 24px 0; font-size: 13px; text-transform: uppercase; color: #8C8F99; letter-spacing: 1px;">Weapon Usage & Efficiency</h3>
+        </div>
+        """)
+        
+        # Group by weapon
+        weapon_stats = current_player_df.groupby('primary_weapon').agg(
+            matches=('match_id', 'count'),
+            kills=('kills', 'sum'),
+            deaths=('deaths', 'sum'),
+            damage=('damage', 'sum'),
+            headshots=('headshots', 'sum')
+        ).reset_index()
+        
+        weapon_stats['kd'] = weapon_stats['kills'] / weapon_stats['deaths'].replace(0, 1)
+        weapon_stats['hs_pct'] = (weapon_stats['headshots'] / weapon_stats['kills'].replace(0, 1)) * 100
+        weapon_stats = weapon_stats.sort_values('matches', ascending=False)
+        
+        cols = st.columns(3)
+        for i, row in weapon_stats.head(9).iterrows():
+            with cols[i % 3]:
+                wpn_name = row['primary_weapon']
+                kd = row['kd']
+                hs = row['hs_pct']
+                kills = row['kills']
+                matches = row['matches']
+                color = "#10B981" if kd > 1.2 else "#00E5FF" if kd >= 1.0 else "#EF4444"
+                
+                render_html(f"""
+                <div style="border: 1px solid #1F222A; border-left: 3px solid {color}; border-radius: 6px; padding: 20px; background-color: #111318; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div style="font-size: 16px; font-weight: 700; color: white;">{wpn_name}</div>
+                        <div style="background-color: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; font-size: 10px; color: #8C8F99; font-weight: 600;">{matches} MATCHES</div>
+                    </div>
+                    <div style="display: flex; gap: 24px;">
+                        <div>
+                            <div style="color: #8C8F99; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">K/D Ratio</div>
+                            <div style="font-size: 18px; font-weight: 700; color: {color};">{kd:.2f}</div>
+                        </div>
+                        <div>
+                            <div style="color: #8C8F99; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Kills</div>
+                            <div style="font-size: 18px; font-weight: 700; color: white;">{kills}</div>
+                        </div>
+                        <div>
+                            <div style="color: #8C8F99; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Headshots</div>
+                            <div style="font-size: 18px; font-weight: 700; color: white;">{hs:.1f}%</div>
+                        </div>
+                    </div>
+                </div>
+                """)
+
 elif st.session_state.page == 'Achievements':
     render_top_bar("Achievements", "Milestones and badges earned in your career")
     

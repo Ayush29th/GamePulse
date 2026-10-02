@@ -5,7 +5,7 @@ from . import database
 REQUIRED_COLUMNS = [
     'match_id', 'date', 'game', 'map', 'result', 
     'kills', 'deaths', 'assists', 'damage', 'score', 
-    'placement', 'match_duration', 'headshots'
+    'placement', 'match_duration', 'headshots', 'primary_weapon'
 ]
 
 def validate_csv(file_obj) -> Tuple[bool, str, pd.DataFrame]:

@@ -43,6 +43,7 @@ def init_db():
         placement INTEGER,
         match_duration INTEGER,
         headshots INTEGER,
+        primary_weapon TEXT,
         FOREIGN KEY (player_id) REFERENCES players (player_id)
     )
     ''')
@@ -68,7 +69,7 @@ def load_data_from_df(df: pd.DataFrame):
     
     # Keep only relevant columns for matches
     match_cols = ['match_id', 'player_id', 'date', 'game', 'map', 'result', 'kills', 
-                  'deaths', 'assists', 'damage', 'score', 'placement', 'match_duration', 'headshots']
+                  'deaths', 'assists', 'damage', 'score', 'placement', 'match_duration', 'headshots', 'primary_weapon']
     
     # Ensure all columns exist
     for col in match_cols:

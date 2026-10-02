@@ -16,6 +16,14 @@ def generate_sample_data(num_matches=500):
         'PUBG': ['Erangel', 'Miramar', 'Sanhok', 'Vikendi', 'Taego'],
         'Fortnite': ['Battle Royale', 'Zero Build', 'Arena', 'Ranked']
     }
+    weapons = {
+        'Valorant': ['Vandal', 'Phantom', 'Operator', 'Sheriff', 'Judge'],
+        'CS2': ['AK-47', 'M4A4', 'AWP', 'Desert Eagle', 'MAC-10'],
+        'Apex Legends': ['R-301', 'Flatline', 'Peacekeeper', 'Kraber', 'Wingman'],
+        'PUBG': ['M416', 'Beryl M762', 'Kar98k', 'Mini14', 'UMP45'],
+        'Fortnite': ['Assault Rifle', 'Pump Shotgun', 'SMG', 'Sniper Rifle', 'Tactical Shotgun']
+    }
+
     
     results = ['WIN', 'LOSS', 'DRAW']
     
@@ -41,6 +49,7 @@ def generate_sample_data(num_matches=500):
         
         game = np.random.choice(games, p=[0.3, 0.2, 0.2, 0.15, 0.15])
         game_map = np.random.choice(maps[game])
+        primary_weapon = np.random.choice(weapons[game])
         
         kills = max(0, int(base_kills[i]))
         deaths = max(1, int(base_deaths[i]))
@@ -108,7 +117,8 @@ def generate_sample_data(num_matches=500):
             'score': score,
             'placement': placement,
             'match_duration': match_duration,
-            'headshots': headshots
+            'headshots': headshots,
+            'primary_weapon': primary_weapon
         }
         matches.append(match)
         
